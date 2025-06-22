@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS EVENT (
-    id serial,
+    id serial PRIMARY KEY,
     event_name VARCHAR(255) UNIQUE,
     event_date DATE,
     nomination_end_timestamp TIMESTAMP,
@@ -11,10 +11,18 @@ CREATE TABLE IF NOT EXISTS EVENT (
 );
 
 CREATE TABLE IF NOT EXISTS event_admins (
-    id serial,
-    event_id int,
-    user_id varchar(1000),
+    id serial PRIMARY KEY,
+    event_id int REFERENCES EVENT (id),
+    user_id varchar(1000) NOT NULL,
     -- TODO: Consider making permission an enum
-    user_permission varchar(255)
+    user_permission varchar(255) NOT NULL
 );
+
+SELECT * FROM EVENT;
+
+select * from event_admins;
+
+-- delete from event where id > 1
+
+-- DROP TABLE event_admins;
 

@@ -1,14 +1,18 @@
 import streamlit as st
 from datetime import datetime, timedelta, time
 from obj.event import Event
+from obj.event_admins import EventAdmins
 from utils import validation, db
-from sqlalchemy.orm import sessionmaker
-
+from sqlalchemy.orm import sessionmaker, Session
+import hashlib
 
 def submit_event(event: Event):
     Session = sessionmaker(db.get_engine())
     with Session() as session:
         session.add(event)
+        event_query = session.query(Event)
+        event_id = event_query.filter(Event.event_name == event.event_name).first().id
+        insert_event_admin(event_id, user_permission='owner', session=session)
         session.commit()
         st.success(f'Event {event.event_name} was created successfully', icon='✅')
         # st.toast(f'Event {event.event_name} was inserted successfully')
@@ -42,6 +46,17 @@ def update_karaoke_event(event: Event):
         # returned_event = event_query.filter(Event.event_name==event_name).first()
         # return returned_event
     # pass
+
+def insert_event_admin(event_id: int, user_permission: str, session: Session):
+    admin = EventAdmins(
+        event_id = event_id,
+        user_id = hashlib.sha256(st.user.email.encode()).hexdigest(),
+        user_permission = user_permission
+    )
+    session.add(admin)
+    st.success(f'Set {st.user.email} as event {user_permission}', icon='✅')
+
+
 
 if not st.user.is_logged_in:
     st.wriate('You should login first')
