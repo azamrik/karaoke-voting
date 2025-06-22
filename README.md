@@ -1,2 +1,2 @@
 # karaoke-voting
-An application for Karaoke voting
+An application made for creating Karaoke events, nominatinig songs & voting on the song list.
